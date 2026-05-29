@@ -87,4 +87,6 @@ private:
 	void OnMove(const FInputActionValue& Value);
 	void OnMoveCompleted(const FInputActionValue& Value);
 	
+	FRotator MeshBaseRotation = FRotator::ZeroRotator;
+	
 };

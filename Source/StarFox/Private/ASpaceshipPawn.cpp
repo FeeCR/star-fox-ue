@@ -46,6 +46,9 @@ void AASpaceshipPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	MeshBaseRotation = MeshComponent->GetRelativeRotation();
+
+	
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem
@@ -98,9 +101,9 @@ void AASpaceshipPawn::ApplyMovement(float DeltaTime)
 void AASpaceshipPawn::ApplyTilt(float DeltaTime)
 {
 	const FRotator Target(
-		 CurrentInput.Y * MaxPitchAngle,
+		 -CurrentInput.X * MaxPitchAngle,
 		 0.f,
-		-CurrentInput.X * MaxRollAngle
+		CurrentInput.Y * MaxRollAngle
 	);
 	
 	
@@ -112,7 +115,7 @@ void AASpaceshipPawn::ApplyTilt(float DeltaTime)
 		TiltInterpSpeed
 	);
 
-	MeshComponent->SetRelativeRotation(CurrentMeshRotation);
+	MeshComponent->SetRelativeRotation(MeshBaseRotation + CurrentMeshRotation);
 }
 
 void AASpaceshipPawn::OnMove(const FInputActionValue& Value)
