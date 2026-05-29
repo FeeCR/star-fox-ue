@@ -102,7 +102,7 @@ void AASpaceshipPawn::ApplyTilt(float DeltaTime)
 {
 	const FRotator Target(
 		 -CurrentInput.X * MaxPitchAngle,
-		 0.f,
+		 180.f,
 		CurrentInput.Y * MaxRollAngle
 	);
 	
