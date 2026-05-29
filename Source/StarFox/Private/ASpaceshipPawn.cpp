@@ -3,6 +3,7 @@
 
 #include "ASpaceshipPawn.h"
 
+#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
@@ -60,8 +61,9 @@ void AASpaceshipPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	AddActorWorldOffset(FVector(ForwardSpeed * DeltaTime, 0.f, 0.f), true);
+
 	ApplyMovement(DeltaTime);
-	
 	ApplyTilt(DeltaTime);
 
 }
@@ -71,6 +73,11 @@ void AASpaceshipPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (!EIC) return;
+
+	EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AASpaceshipPawn::OnMove);
+	EIC->BindAction(MoveAction, ETriggerEvent::Completed, this, &AASpaceshipPawn::OnMoveCompleted);
 }
 
 void AASpaceshipPawn::ApplyMovement(float DeltaTime)
@@ -90,6 +97,31 @@ void AASpaceshipPawn::ApplyMovement(float DeltaTime)
 
 void AASpaceshipPawn::ApplyTilt(float DeltaTime)
 {
+	const FRotator Target(
+		 CurrentInput.Y * MaxPitchAngle,
+		 0.f,
+		-CurrentInput.X * MaxRollAngle
+	);
 	
+	
+	
+	CurrentMeshRotation = FMath::RInterpTo(
+		CurrentMeshRotation,
+		Target,
+		DeltaTime,
+		TiltInterpSpeed
+	);
+
+	MeshComponent->SetRelativeRotation(CurrentMeshRotation);
+}
+
+void AASpaceshipPawn::OnMove(const FInputActionValue& Value)
+{
+	CurrentInput = Value.Get<FVector2D>();
+}
+
+void AASpaceshipPawn::OnMoveCompleted(const FInputActionValue& Value)
+{
+	CurrentInput = FVector2D::ZeroVector;
 }
 

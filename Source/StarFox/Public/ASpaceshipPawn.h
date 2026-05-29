@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "ASpaceshipPawn.generated.h"
 
+struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
 class USpringArmComponent;
@@ -67,12 +68,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
 	float BoundaryZ = 400.f;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tilt")
+	float MaxRollAngle = 30.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tilt")
+	float MaxPitchAngle = 15.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tilt")
+	float TiltInterpSpeed = 8.f;
+	
 private:
 	void ApplyMovement(float DeltaTime);
 	void ApplyTilt(float DeltaTime);
 	
 	FVector2D CurrentInput = FVector2D::ZeroVector;
-	
 	FRotator CurrentMeshRotation = FRotator::ZeroRotator;
+	
+	void OnMove(const FInputActionValue& Value);
+	void OnMoveCompleted(const FInputActionValue& Value);
 	
 };
