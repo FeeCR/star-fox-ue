@@ -6,6 +6,11 @@
 #include "GameFramework/Pawn.h"
 #include "ASpaceshipPawn.generated.h"
 
+class USpringArmComponent;
+class UStaticMeshComponent;
+class UCameraComponent;
+class UFloatingPawnMovement;
+
 UCLASS()
 class STARFOX_API AASpaceshipPawn : public APawn
 {
@@ -25,5 +30,22 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<USceneComponent> RootSceneComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UStaticMeshComponent> MeshComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<USpringArmComponent> SpringArm;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UCameraComponent> Camera;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UFloatingPawnMovement> MovementComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	float LateralSpeed = 600.f;
 };
