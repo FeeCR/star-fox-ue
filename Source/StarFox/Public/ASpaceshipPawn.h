@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "ASpaceshipPawn.generated.h"
 
+class UInputAction;
+class UInputMappingContext;
 class USpringArmComponent;
 class UStaticMeshComponent;
 class UCameraComponent;
@@ -28,9 +30,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
+	//Input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	TObjectPtr<UInputMappingContext> MappingContext;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	TObjectPtr<UInputAction> MoveAction;
+	
+	//Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USceneComponent> RootSceneComponent;
 	
@@ -46,6 +54,25 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UFloatingPawnMovement> MovementComponent;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	//Settings
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
+	float ForwardSpeed = 1200.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
 	float LateralSpeed = 600.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
+	float BoundaryY = 600.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
+	float BoundaryZ = 400.f;
+	
+private:
+	void ApplyMovement(float DeltaTime);
+	void ApplyTilt(float DeltaTime);
+	
+	FVector2D CurrentInput = FVector2D::ZeroVector;
+	
+	FRotator CurrentMeshRotation = FRotator::ZeroRotator;
+	
 };

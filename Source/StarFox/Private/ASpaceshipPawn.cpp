@@ -3,6 +3,7 @@
 
 #include "ASpaceshipPawn.h"
 
+#include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -44,12 +45,24 @@ void AASpaceshipPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem
+			= ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(MappingContext, 0);
+		}
+	}
 }
 
 // Called every frame
 void AASpaceshipPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	ApplyMovement(DeltaTime);
+	
+	ApplyTilt(DeltaTime);
 
 }
 
@@ -58,5 +71,25 @@ void AASpaceshipPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AASpaceshipPawn::ApplyMovement(float DeltaTime)
+{
+	const FVector Delta(
+		0.f,
+		CurrentInput.X * LateralSpeed * DeltaTime,
+		CurrentInput.Y * LateralSpeed * DeltaTime
+		);
+	AddActorWorldOffset(Delta, true);
+	
+	FVector Loc = GetActorLocation();
+	Loc.Y = FMath::Clamp(Loc.Y, -BoundaryY, BoundaryY);
+	Loc.Z = FMath::Clamp(Loc.Z, -BoundaryZ, BoundaryZ);
+	SetActorLocation(Loc);
+}
+
+void AASpaceshipPawn::ApplyTilt(float DeltaTime)
+{
+	
 }
 
